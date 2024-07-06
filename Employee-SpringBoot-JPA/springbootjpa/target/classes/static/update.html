@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Employee</title>
+    <script>
+
+
+        async function updateEmployee(event) {
+            event.preventDefault();
+            const id = document.getElementById('id').value;
+            const name = document.getElementById('name').value;
+            const department = document.getElementById('department').value;
+
+            // Check if fields are empty
+            if (!id || !name || !department) {
+                alert('Please enter both name and department');
+                return;
+            }
+
+            // Update employee details
+            const updateResponse = await fetch(`/api/employees/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, department })
+            });
+
+            if (updateResponse.ok) {
+                const result = await updateResponse.json();
+                alert(`Employee updated: ${JSON.stringify(result)}`);
+                document.getElementById('employeeForm').reset();
+                document.getElementById('name').value = '';
+                document.getElementById('department').value = '';
+                document.getElementById('name').disabled = true;
+                document.getElementById('department').disabled = true;
+                document.getElementById('updateButton').disabled = true;
+            } else {
+                alert('Failed to update employee');
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>Update Employee</h1>
+<form id="employeeForm">
+    <label for="id">Employee ID:</label>
+    <input type="number" id="id" name="id" required><br>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" ><br>
+    <label for="department">Department:</label>
+    <input type="text" id="department" name="department" ><br>
+
+    <button type="submit" id="updateButton" class="hidden" onclick="updateEmployee(event)">Update</button>
+</form>
+<button onclick="window.location.href='index.html'">Home</button>
+</body>
+</html>

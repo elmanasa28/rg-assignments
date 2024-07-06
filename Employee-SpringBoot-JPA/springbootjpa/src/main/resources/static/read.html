@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Read Employees</title>
+    <script>
+        async function getEmployees() {
+            const response = await fetch('/api/employees');
+            const result = await response.json();
+            const tableBody = document.getElementById('employeesTableBody');
+            tableBody.innerHTML = '';
+            result.forEach(employee => {
+                const row = `<tr>
+                    <td>${employee.id}</td>
+                    <td>${employee.name}</td>
+                    <td>${employee.department}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        window.onload = function() {
+            getEmployees();
+        }
+    </script>
+</head>
+<body>
+<h1>Employee List</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Department</th>
+    </tr>
+    </thead>
+    <tbody id="employeesTableBody">
+    <!-- Employee rows will be added here -->
+    </tbody>
+</table><br>
+<button onclick="window.location.href='index.html'">Home</button>
+</body>
+</html>
