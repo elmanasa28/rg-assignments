@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee CRUD Operations</title>
+    <style>
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .form-container {
+            display: none; /* Initially hide all form containers */
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .form-container.active {
+            display: block; /* Display the form container when active */
+        }
+        .form-group {
+            margin: 10px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            padding: 8px;
+            font-size: 14px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Employee CRUD Operations</h1>
+
+    <!-- Create Employee Button -->
+    <button class="button" onclick="toggleForm('create-form')">Create Employee</button>
+
+    <!-- Create Employee Form -->
+    <div class="form-container" id="create-form">
+        <div class="form-group">
+            <label for="create-name">Name:</label>
+            <input type="text" id="create-name" name="create-name">
+        </div>
+        <div class="form-group">
+            <label for="create-department">Department:</label>
+            <input type="text" id="create-department" name="create-department">
+        </div>
+        <button class="button" onclick="createEmployee()">Create</button>
+    </div>
+
+    <!-- Update Employee Button -->
+    <button class="button" onclick="toggleForm('update-form')">Update Employee</button>
+
+    <!-- Update Employee Form -->
+    <div class="form-container" id="update-form">
+        <div class="form-group">
+            <label for="update-id">ID:</label>
+            <input type="number" id="update-id" name="update-id">
+        </div>
+        <div class="form-group">
+            <label for="update-name">New Name:</label>
+            <input type="text" id="update-name" name="update-name">
+        </div>
+        <div class="form-group">
+            <label for="update-department">New Department:</label>
+            <input type="text" id="update-department" name="update-department">
+        </div>
+        <button class="button" onclick="updateEmployee()">Update</button>
+    </div>
+
+    <!-- Read/Delete Employee Button -->
+    <button class="button" onclick="toggleForm('read-delete-form')">Read/Delete Employee</button>
+
+    <!-- Read/Delete Employee Form -->
+    <div class="form-container" id="read-delete-form">
+        <div class="form-group">
+            <label for="read-delete-id">Employee ID:</label>
+            <input type="number" id="read-delete-id" name="read-delete-id">
+        </div>
+        <button class="button" onclick="readEmployee()">Read</button>
+        <button class="button" onclick="deleteEmployee()">Delete</button>
+    </div>
+</div>
+
+<script>
+    function toggleForm(formId) {
+        var form = document.getElementById(formId);
+        form.classList.toggle('active'); // Toggle the 'active' class to show/hide the form
+    }
+
+    function createEmployee() {
+        const name = document.getElementById('create-name').value;
+        const department = document.getElementById('create-department').value;
+        fetch('/employees', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                department: department
+            })
+        }).then(response => response.json())
+          .then(data => {
+              alert('Employee created with ID: ' + data);
+              document.getElementById('create-name').value = ''; // Clear input fields after submission
+              document.getElementById('create-department').value = '';
+              toggleForm('create-form'); // Hide the form after submission
+          })
+          .catch(error => alert('Error creating employee: ' + error));
+    }
+
+    function readEmployee() {
+        const id = document.getElementById('read-delete-id').value;
+        fetch('/employees/' + id)
+            .then(response => response.json())
+            .then(data => alert('Employee: ' + JSON.stringify(data)))
+            .catch(error => alert('Error reading employee: ' + error));
+    }
+
+    function updateEmployee() {
+        const id = document.getElementById('update-id').value;
+        const name = document.getElementById('update-name').value;
+        const department = document.getElementById('update-department').value;
+        fetch('/employees/' + id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                department: department
+            })
+        }).then(response => {
+            alert('Employee updated');
+            document.getElementById('update-id').value = ''; // Clear input fields after submission
+            document.getElementById('update-name').value = '';
+            document.getElementById('update-department').value = '';
+            toggleForm('update-form'); // Hide the form after submission
+        })
+        .catch(error => alert('Error updating employee: ' + error));
+    }
+
+    function deleteEmployee() {
+        const id = document.getElementById('read-delete-id').value;
+        fetch('/employees/' + id, {
+            method: 'DELETE'
+        }).then(response => {
+            alert('Employee deleted');
+            document.getElementById('read-delete-id').value = ''; // Clear input fields after submission
+            toggleForm('read-delete-form'); // Hide the form after submission
+        })
+        .catch(error => alert('Error deleting employee: ' + error));
+    }
+</script>
+</body>
+</html>
